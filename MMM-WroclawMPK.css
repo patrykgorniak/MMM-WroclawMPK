@@ -1,0 +1,50 @@
+.mmm-wroclaw-mpk-header {
+	display: flex;
+	justify-content: space-between;
+	gap: 20px;
+	margin-bottom: 8px;
+}
+
+.mmm-wroclaw-mpk-title {
+	font-weight: bold;
+}
+
+.mmm-wroclaw-mpk-stop {
+	text-align: right;
+}
+
+.mmm-wroclaw-mpk table {
+	border-spacing: 0 4px;
+}
+
+.mmm-wroclaw-mpk td {
+	padding: 0 8px 0 0;
+	vertical-align: baseline;
+}
+
+.mmm-wroclaw-mpk-line {
+	min-width: 38px;
+}
+
+.mmm-wroclaw-mpk-destination {
+	max-width: 190px;
+}
+
+.mmm-wroclaw-mpk-platform {
+	font-size: 0.8em;
+}
+
+.mmm-wroclaw-mpk-time {
+	padding-right: 0 !important;
+	text-align: right;
+	white-space: nowrap;
+}
+
+.mmm-wroclaw-mpk-status {
+	margin-top: 4px;
+	text-align: right;
+}
+
+.mmm-wroclaw-mpk-error {
+	max-width: 260px;
+}
