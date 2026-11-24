@@ -16,7 +16,10 @@ Add the module to `config/config.js`:
 		stopId: "s-u3h4v8uj3z-magellana",
 		stopName: "Magellana",
 		maximumDepartures: 8,
-		updateInterval: 60000,
+		cachedDepartures: 24,
+		updateInterval: 1,
+		activeFrom: "06:00",
+		activeTo: "23:00",
 		apiKey: "YOUR_TRANSITLAND_API_KEY"
 	}
 }
@@ -26,7 +29,9 @@ By default, the module uses the Transitland `stops/{stopId}/departures` endpoint
 
 MPK Wrocław does not provide a simple official REST endpoint such as `/rozklady/odjazdy?stop=...`. The `https://mpk.wroc.pl/bus_position` endpoint provides vehicle positions and uses POST, so it cannot replace a departures board by itself.
 
-You may provide a custom endpoint through `endpoint`; the `{stopId}` and `{limit}` placeholders are supported.
+You may provide a custom endpoint through `endpoint`; the `{stopId}` and `{limit}` placeholders are supported. Set `activeFrom` and `activeTo` to limit polling to a daily time window. Overnight windows such as `22:00`–`06:00` are supported. If both values are empty, polling is active all day.
+
+`updateInterval` is specified in minutes. For example, `updateInterval: 20` checks for new data every 20 minutes.
 
 The module recognizes JSON responses containing a `departures`, `odjazdy`, `results`, or `data` array. A departure may use the fields `line`, `destination`, `platform`, `time`, or `minutes`. A basic HTML table fallback is also available.
 
@@ -48,7 +53,10 @@ Dodaj moduł do `config/config.js`:
 		stopId: "s-u3h4v8uj3z-magellana",
 		stopName: "Przystanek docelowy",
 		maximumDepartures: 8,
-		updateInterval: 60000,
+		cachedDepartures: 24,
+		updateInterval: 1,
+		activeFrom: "06:00",
+		activeTo: "23:00",
 		apiKey: "TWOJ_KLUCZ_TRANSITLAND"
 	}
 }
@@ -59,5 +67,9 @@ Domyślnie moduł korzysta z endpointu Transitland `stops/{stopId}/departures`, 
 MPK Wrocław nie udostępnia prostego, oficjalnego endpointu REST w rodzaju `/rozklady/odjazdy?stop=...`. Endpoint `https://mpk.wroc.pl/bus_position` służy do pozycji pojazdów i jest metodą POST, więc nie może sam zastąpić tablicy odjazdów.
 
 Można podać własny endpoint opcją `endpoint`; obsługiwane są placeholdery `{stopId}` i `{limit}`.
+
+`updateInterval` podaje się w minutach. Na przykład `updateInterval: 20` oznacza odpytywanie co 20 minut.
+
+Opcje `activeFrom` i `activeTo` ograniczają odpytywanie do wskazanego przedziału godzinowego. Obsługiwane są również zakresy przechodzące przez północ, np. `22:00`–`06:00`. Puste wartości oznaczają działanie przez całą dobę.
 
 Moduł rozpoznaje odpowiedzi JSON zawierające tablicę `departures`, `odjazdy`, `results` albo `data`. Pojedynczy odjazd może używać pól `line`, `destination`, `platform`, `time` lub `minutes`. Dostępny jest również prosty fallback dla tabel HTML.

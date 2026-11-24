@@ -1,10 +1,11 @@
 const NodeHelper = require("node_helper");
 const Log = require("logger");
-const { normalizeResponse } = require("./mpk_utils");
+const { isWithinActiveHours, normalizeResponse } = require("./mpk_utils");
 
 module.exports = NodeHelper.create({
 	start () {
 		this.timers = new Map();
+		this.activeStates = new Map();
 	},
 
 	socketNotificationReceived (notification, config) {
@@ -21,16 +22,30 @@ module.exports = NodeHelper.create({
 
 		const key = `${config.instanceId}:${config.endpoint}:${config.stopId}`;
 		if (!this.timers.has(key)) {
-			const interval = Math.max(Number(config.updateInterval) || 60000, 30000);
-			this.timers.set(key, setInterval(() => this.fetchDepartures(config), interval));
+			const interval = Math.max(Number(config.updateInterval) || 1, 1) * 60 * 1000;
+			this.timers.set(key, setInterval(() => this.fetchIfActive(config), interval));
 		}
+		this.fetchIfActive(config);
+	},
+
+	fetchIfActive (config) {
+		const active = isWithinActiveHours(new Date(), config.activeFrom, config.activeTo);
+		const stateKey = config.instanceId || config.stopId;
+		if (!active) {
+			if (this.activeStates.get(stateKey) !== false) {
+				this.activeStates.set(stateKey, false);
+				this.sendSocketNotification("MPK_INACTIVE", { instanceId: config.instanceId });
+			}
+			return;
+		}
+		this.activeStates.set(stateKey, true);
 		this.fetchDepartures(config);
 	},
 
 	async fetchDepartures (config) {
 		const url = config.endpoint
 			.replace("{stopId}", encodeURIComponent(config.stopId))
-			.replace("{limit}", encodeURIComponent(config.maximumDepartures));
+			.replace("{limit}", encodeURIComponent(config.fetchLimit || config.maximumDepartures));
 		try {
 			const response = await fetch(url, {
 				headers: {
@@ -44,7 +59,7 @@ module.exports = NodeHelper.create({
 			}
 			const body = await response.text();
 			const contentType = response.headers.get("content-type") || "";
-			const data = normalizeResponse(body, contentType, config.maximumDepartures);
+			const data = normalizeResponse(body, contentType, config.fetchLimit || config.maximumDepartures);
 			this.sendSocketNotification("MPK_DEPARTURES", {
 				instanceId: config.instanceId,
 				departures: data.departures,

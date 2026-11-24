@@ -4,7 +4,7 @@ const { normalizeResponse } = require("./mpk_utils");
 describe("MMM-WroclawMPK response normalizer", () => {
 	it("normalizes JSON departures", () => {
 		const result = normalizeResponse(JSON.stringify({ stopName: "Rynek", departures: [{ line: "10", destination: "Leśnica", minutes: 4 }] }), "application/json");
-		expect(result).toEqual({ stopName: "Rynek", departures: [{ line: "10", destination: "Leśnica", platform: "", displayTime: "za 4 min" }] });
+		expect(result).toMatchObject({ stopName: "Rynek", departures: [{ line: "10", destination: "Leśnica", platform: "", displayTime: "za 4 min", minutesRemaining: 4 }] });
 	});
 
 	it("supports HTML tables", () => {
